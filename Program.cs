@@ -24,25 +24,21 @@ namespace Graph_Plotter_v2
         Representation representation = new Representation();
         FileManager filemanager = new FileManager();
         private int currentuserinput = 0;
-        private string currentfilename = "";
-        private List<Point> pointslist = new List<Point>();
-        private string graphshape = "";
-        private string equation = "";
-        //private Bitmap image = new Bitmap();
+
         public void run() //runs the controller
         {
             userinterface.displaymenu();
             currentuserinput = userinterface.Getuserinput();
             switch(currentuserinput)
             {
-                case 1:
-                    currentfilename = userinterface.GetFileName();
-                    pointslist = filemanager.GetPoints(currentfilename);
-                    graphshape = userinterface.GetShape();
-                    equation = calculation.GetEquation(pointslist,graphshape);
-                    representation.CreateImage(equation, pointslist);
-                    userinterface.SaveFile();
-                    filemanager.SaveImgFile();
+                case 1: //case for creating a graph
+                    string currentfilename = userinterface.GetFileName(); //gets file name for dataset from user interface.
+                    List<Point> pointslist = filemanager.GetPoints(currentfilename); //gets the file manager to return a list of points from the file.
+                    string graphshape = userinterface.GetShape(); // gets the shape of the graph from the user interface.
+                    string equation = calculation.GetEquation(pointslist,graphshape); // passes in the shape of graph and list of points into calculation in return for the equation of best-fit.
+                    Bitmap image = representation.CreateImage(equation, pointslist); //  passes in the equation and list of points into representation in return for a bitmap image of the final graph.
+                    filemanager.SaveImgFile(userinterface.SaveFile(),image); // Gets the user requested file name from user interface and passes this into the file manager along with the bitmap image to save the file.
+                    run(); // back to menu (recursive subroutine with a base case of user input = 5)
                     break;
                 case 5:
                     break;
@@ -139,19 +135,12 @@ namespace Graph_Plotter_v2
             List<Point> points = new List<Point>();
             return points; 
         } 
-        public void SaveImgFile() //saves an image file to the image folder
-        {
-
-        }
-        public void SaveTxtFile() //saves a text file to the data set folder.
-        {
-
-        }  
-        public void AddImgFile(string filename, List<string> dataset) //writes the dataset to a new textfile, and adds it to the list of all created files.
+       
+        public void SaveImgFile(string filename, Bitmap b) //writes the dataset to a new textfile, and adds it to the list of all created files.
         {
             imagefiles.Add(filename);
         }
-        public void AddTxtFile(string filename, List<string> dataset)
+        public void SaveTxtFile(string filename, List<string> dataset)
         {
             textfiles.Add(filename);
         }
