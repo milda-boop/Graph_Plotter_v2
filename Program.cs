@@ -132,7 +132,8 @@ namespace Graph_Plotter_v2
 
     public class FileManager
     {
-        
+        private List<string> imagefiles = new List<string>();
+        private List<string> textfiles = new List<string>();
         public List<Point> GetPoints(string textfile) // returns a list of points read from the specified textfile.
         {
             List<Point> points = new List<Point>();
@@ -142,10 +143,52 @@ namespace Graph_Plotter_v2
         {
 
         }
+        public void SaveTxtFile() //saves a text file to the data set folder.
+        {
+
+        }  
+        public void AddImgFile(string filename, List<string> dataset) //writes the dataset to a new textfile, and adds it to the list of all created files.
+        {
+            imagefiles.Add(filename);
+        }
+        public void AddTxtFile(string filename, List<string> dataset)
+        {
+            textfiles.Add(filename);
+        }
+        public List<string> GetImgFiles() //returns list of image files
+        {
+            return imagefiles;
+        }
+        public List<string> GetTxtFiles() //returns list of text files
+        {
+            return textfiles;
+        }
     }
 
     public class Point
     {
+        private double x;
+        private double y;
 
+        public Point(string point) // constructor used for when instantiating point objects from a text file.
+        {
+            string[] splitpoint = point.Split(','); // splits a point into x and y values.
+            this.x = double.Parse(splitpoint[0]) * Math.Pow(10, -12); // numbers are temporarily minimised to avoid rounding errors during calculations.
+            this.y = double.Parse(splitpoint[1]) * Math.Pow(10, -12);
+        }
+        public Point(double x, double y) // different constructor used for when instantiating point objects for the line of best fit.
+        {
+            this.x = x;
+            this.y = y;
+        }
+        public double GetX() 
+        {
+            return x;
+        }
+
+        public double GetY()
+        {
+            return y;
+        }
     }
 }
