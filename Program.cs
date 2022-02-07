@@ -39,19 +39,24 @@ namespace Graph_Plotter_v2
                 switch (currentuserinput)
                 {
                     case 1: //case for creating a graph
-                        string currentfilename = userinterface.GetFileName();               // gets file name for dataset from user interface.
-                        List<Point> pointslist = filemanager.GetPoints(currentfilename);    // gets the file manager to return a list of points from the file.
-                        string graphshape = userinterface.GetShape();                       // gets the shape of the graph from the user interface.
-                        string equation = calculation.GetEquation(pointslist, graphshape);  // passes in the shape of graph and list of points into calculation in return for the equation of best-fit.
-                        Bitmap image = representation.CreateImage(equation, pointslist);    // passes in the equation and list of points into representation in return for a bitmap image of the final graph.
-                        filemanager.SaveImgFile(userinterface.SaveFile(), image);           // Gets the user requested file name from user interface and passes this into the file manager along with the bitmap image to save the file.
+                        string currentfilename = userinterface.GetFileName();                   // gets file name for dataset from user interface.
+                        List<Point> pointslist = filemanager.GetPoints(currentfilename);        // gets the file manager to return a list of points from the file.
+                        string graphshape = userinterface.GetShape();                           // gets the shape of the graph from the user interface.
+                        string equation = calculation.GetEquation(pointslist, graphshape);      // passes in the shape of graph and list of points into calculation in return for the equation of best-fit.
+                        Bitmap image = representation.CreateImage(equation, pointslist);        // passes in the equation and list of points into representation in return for a bitmap image of the final graph.
+                        filemanager.SaveImgFile(userinterface.SaveFile(), image);               // Gets the user requested file name from user interface and passes this into the file manager along with the bitmap image to save the file.
                         break;
                     case 2: //case for viewing graphs
                         userinterface.DisplayFiles(filemanager.GetImgFiles());
                         break;
-                    case 3: //case for creating a data set
-
-                    case 5:
+                    case 3: //case for viewing data sets
+                        userinterface.DisplayFiles(filemanager.GetTxtFiles());
+                        break;
+                    case 4: //case for creating a data set
+                        List<string> dataset = userinterface.GetDataset();
+                        filemanager.SaveTxtFile(userinterface.SaveFile(),dataset);
+                        break;
+                    case 5: //case for when user decided to exit - bool value is set to true and controller escapes the while loop.
                         exit = true;
                         break;
                 }
@@ -109,7 +114,7 @@ namespace Graph_Plotter_v2
             Console.WriteLine("Enter the textfile containing the data set you wish to use:");
             return Console.ReadLine();
         }
-        public string GetShape() //returns shape of graph to the controller.
+        public string GetShape()    //returns shape of graph to the controller.
         {
             Console.WriteLine("Enter the expected shape of graph:");
             return Console.ReadLine();
@@ -125,6 +130,25 @@ namespace Graph_Plotter_v2
             {
                 Console.WriteLine(f);
             }
+        }
+        public List<string> GetDataset() // gets user to enter in the points for a new dataset and returns the list of points as strings to the controller.
+        {
+            List<string> dataset = new List<string>();
+            bool over = false;   
+            Console.WriteLine("Enter points one at a time, with the x and y values separated by a single comma:");
+            while(!over) // will keep asking for points until user selects to save.
+            {
+                Console.WriteLine("Enter next point or s to save the dataset:");
+                if(Console.ReadLine()!="s")
+                {
+                    dataset.Add(Console.ReadLine());
+                }
+                else
+                {
+                    over = true;
+                }
+            }
+            return dataset;
         }
     }
 
