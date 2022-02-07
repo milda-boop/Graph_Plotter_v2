@@ -71,7 +71,7 @@ namespace Graph_Plotter_v2
     {
        private int userinput = 0;
 
-        public void displaymenu() // displays the menu and options to the user.
+        public void displaymenu()                    // displays the menu and options to the user.
         {
             Console.Clear();
             Console.WriteLine("   _____ _____            _____  _    _   _____  _      ____ _______ _______ ______ _____ ");
@@ -106,15 +106,15 @@ namespace Graph_Plotter_v2
 
             }
             return userinput;
-        } // returns userinput from menu choices to the controller.
+        }                 // returns userinput from menu choices to the controller.
 
-        public string GetFileName() // returns file name to the controller.
+        public string GetFileName()                  // returns file name to the controller.
         {
             Console.Clear();
             Console.WriteLine("Enter the textfile containing the data set you wish to use:");
             return Console.ReadLine();
         }
-        public string GetShape()    //returns shape of graph to the controller.
+        public string GetShape()                     // returns shape of graph to the controller.
         {
             Console.WriteLine("Enter the expected shape of graph:");
             return Console.ReadLine();
@@ -123,15 +123,15 @@ namespace Graph_Plotter_v2
         {
             Console.WriteLine("Save file as...");
             return Console.ReadLine();
-        } // returns file name to the controller for saving any file.
-        public void DisplayFiles(List<string> files) //displays the list of files (txt/img).
+        }                  // returns file name to the controller for saving any file.
+        public void DisplayFiles(List<string> files) // displays the list of files (txt/img).
         {
             foreach(string f in files)
             {
                 Console.WriteLine(f);
             }
         }
-        public List<string> GetDataset() // gets user to enter in the points for a new dataset and returns the list of points as strings to the controller.
+        public List<string> GetDataset()             // gets user to enter in the points for a new dataset and returns the list of points as strings to the controller.
         {
             List<string> dataset = new List<string>();
             bool over = false;   
@@ -154,12 +154,107 @@ namespace Graph_Plotter_v2
 
     public class Calculation
     {
+        
         public string GetEquation(List<Point> points,string graphshape)
         {
             string equation = "";
-            return equation;
+            Graph graph = InitGraph(graphshape); // initialises a graph based on its shape
+            equation = graph.BestFit(points);    // calls the overriddden method to calculate the regression equation. 
+            return equation;                     // returns equation to the controller.
+        }
+        public static Graph InitGraph(string shape) //initialises a graph based on its shape
+        {
+            if (shape == "Linear")
+            {
+                Quadratic graph = new Quadratic();
+                return graph;
+            }
+            else
+            {
+                Quadratic graph = new Quadratic();
+                return graph;
+            }
         }
     }
+
+    abstract public class Graph // abstract class defining all methods required for inherited "type of graph" classes
+    {
+        abstract public string BestFit(List<Point> points); //will use suitable regression equation to calculate the line of best fit of a set of data.
+        
+    }
+
+    public class Linear : Graph
+    {
+        double a = 0;
+        double b = 0;
+        double r = 0;
+        double sumxy = 0;
+        double sumx = 0;
+        double sumy = 0;
+        double sumx2 = 0;
+        int n = 0;
+        public override string BestFit(List<Point> points)
+        {
+            n = points.Count();
+
+            foreach (Point i in points)
+            {
+                sumx = sumx + i.GetX();
+                sumy = sumy + i.GetY();
+                sumx2 = sumx2 + Math.Pow(i.GetX(), 2);
+                sumxy = sumxy + (i.GetX() * i.GetY());
+            }
+
+            a = ((n * sumxy) - (sumx * sumy)) / ((n * sumx2) - Math.Pow(sumx, 2));
+            b = (sumy / n) - (a * (sumx / n));
+            return "y = " + (Math.Round(a, 1) + "x + " + Math.Round(b / Math.Pow(10, -12), 1));
+        }
+    }
+
+    public class Quadratic : Graph
+    {
+        double a = 0;
+        double b = 0;
+        double c = 0;
+        double r = 0;
+        public override string BestFit(List<Point> points)
+        {
+            int n = points.Count();
+            double sumx = 0;
+            double sumy = 0;
+            double sumx2 = 0;
+            double sumx3 = 0;
+            double sumx4 = 0;
+            double sumxy = 0;
+            double sumx2y = 0;
+
+            foreach (Point i in points)
+            {
+                sumx = sumx + i.GetX();
+                sumy = sumy + i.GetY();
+                sumx2 = sumx2 + Math.Pow(i.GetX(), 2);
+                sumx3 = sumx3 + Math.Pow(i.GetX(), 3);
+                sumx4 = sumx4 + Math.Pow(i.GetX(), 4);
+                sumxy = sumxy + i.GetX() * i.GetY();
+                sumx2y = sumx2y + Math.Pow(i.GetX(), 2) * i.GetY();
+            }
+
+            double sumxx = (sumx2) - ((Math.Pow(sumx, 2)) / n);
+            sumxy = (sumxy) - ((sumx * sumy) / n);
+            double sumxx2 = (sumx3) - ((sumx2 * sumx) / n);
+            sumx2y = (sumx2y) - ((sumx2 * sumy) / n);
+            double sumx2x2 = (sumx4) - ((Math.Pow(sumx2, 2)) / n);
+
+            a = ((sumx2y * sumxx) - (sumxy * sumxx2)) / ((sumxx * sumx2x2) - (Math.Pow(sumxx2, 2)));
+            b = ((sumxy * sumx2x2) - (sumx2y * sumxx2)) / ((sumxx * sumx2x2) - (Math.Pow(sumxx2, 2)));
+            c = (sumy / n) - (b * (sumx / n)) - (a * (sumx2 / n));
+
+
+            return ("y = " + Math.Round(a / Math.Pow(10, -12), 1) + "x^2 + " + Math.Round(b, 1) + "x + " + Math.Round(c / Math.Pow(10, -12), 1));
+        }
+
+    }
+
 
     public class Representation
     {
