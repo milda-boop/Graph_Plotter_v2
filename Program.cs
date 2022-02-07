@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Graph_Plotter_v2
 {
@@ -24,27 +28,35 @@ namespace Graph_Plotter_v2
         Representation representation = new Representation();
         FileManager filemanager = new FileManager();
         private int currentuserinput = 0;
+        private bool exit = false;
 
         public void run() //runs the controller
         {
             userinterface.displaymenu();
             currentuserinput = userinterface.Getuserinput();
-            switch(currentuserinput)
+            while (!exit)
             {
-                case 1: //case for creating a graph
-                    string currentfilename = userinterface.GetFileName(); //gets file name for dataset from user interface.
-                    List<Point> pointslist = filemanager.GetPoints(currentfilename); //gets the file manager to return a list of points from the file.
-                    string graphshape = userinterface.GetShape(); // gets the shape of the graph from the user interface.
-                    string equation = calculation.GetEquation(pointslist,graphshape); // passes in the shape of graph and list of points into calculation in return for the equation of best-fit.
-                    Bitmap image = representation.CreateImage(equation, pointslist); //  passes in the equation and list of points into representation in return for a bitmap image of the final graph.
-                    filemanager.SaveImgFile(userinterface.SaveFile(),image); // Gets the user requested file name from user interface and passes this into the file manager along with the bitmap image to save the file.
-                    run(); // back to menu (recursive subroutine with a base case of user input = 5)
-                    break;
-                case 5:
-                    break;
+                switch (currentuserinput)
+                {
+                    case 1: //case for creating a graph
+                        string currentfilename = userinterface.GetFileName();               // gets file name for dataset from user interface.
+                        List<Point> pointslist = filemanager.GetPoints(currentfilename);    // gets the file manager to return a list of points from the file.
+                        string graphshape = userinterface.GetShape();                       // gets the shape of the graph from the user interface.
+                        string equation = calculation.GetEquation(pointslist, graphshape);  // passes in the shape of graph and list of points into calculation in return for the equation of best-fit.
+                        Bitmap image = representation.CreateImage(equation, pointslist);    // passes in the equation and list of points into representation in return for a bitmap image of the final graph.
+                        filemanager.SaveImgFile(userinterface.SaveFile(), image);           // Gets the user requested file name from user interface and passes this into the file manager along with the bitmap image to save the file.
+                        break;
+                    case 2: //case for viewing graphs
+                        userinterface.DisplayFiles(filemanager.GetImgFiles());
+                        break;
+                    case 3: //case for creating a data set
+
+                    case 5:
+                        exit = true;
+                        break;
+                }
+
             }
-            
-            
         }
 
         
@@ -107,6 +119,13 @@ namespace Graph_Plotter_v2
             Console.WriteLine("Save file as...");
             return Console.ReadLine();
         } // returns file name to the controller for saving any file.
+        public void DisplayFiles(List<string> files) //displays the list of files (txt/img).
+        {
+            foreach(string f in files)
+            {
+                Console.WriteLine(f);
+            }
+        }
     }
 
     public class Calculation
@@ -120,7 +139,23 @@ namespace Graph_Plotter_v2
 
     public class Representation
     {
-        public void CreateImage(string equation, List<Point> points)
+        public Bitmap CreateImage(string equation, List<Point> points) //returns a bitmap image of the graph.
+        {
+            Bitmap b = new Bitmap(600, 600);
+            using (b)
+            {
+               using(Graphics g = Graphics.FromImage(b))
+               {
+
+               }
+            }
+            return b;
+        }
+        public void ScalePoints()
+        {
+
+        }
+        public void CalculateBfPoints()
         {
 
         }
